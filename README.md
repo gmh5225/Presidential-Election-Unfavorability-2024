@@ -41,6 +41,9 @@ We will use the following models for this task.
 
 
 ```python
+import os
+import requests
+import zipfile
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -58,6 +61,24 @@ import matplotlib.pyplot as plt
 
 
 ```python
+# Download and extract the dataset
+url = 'https://www.kaggle.com/api/v1/datasets/download/mytechnotalent/favorability-polls-07-26-24?datasetVersionNumber=1'
+local_filename = 'archive.zip'
+response = requests.get(url, stream=True)
+if response.status_code == 200:
+    with open(local_filename, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+    print(f'Download completed: {local_filename}')
+else:
+    print(f'Failed to download the file. Status code: {response.status_code}')
+if response.status_code == 200:
+    with zipfile.ZipFile(local_filename, 'r') as zip_ref:
+        zip_ref.extractall('.')
+    print('Unzipping completed')
+else:
+    print('Skipping unzipping due to download failure')
+
 # Load the dataset
 data = pd.read_csv('favorability_polls_07-26-24.csv')
 
